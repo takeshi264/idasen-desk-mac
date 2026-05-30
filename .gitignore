@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Xcode build output
+DerivedData/
+.derivedData/
+build/
+Build/
+*.xcarchive
+*.dSYM
+*.ipa
+*.app
+
+# Swift Package Manager and Xcode package caches
+.build/
+.swiftpm/
+.SourcePackages/
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+*.moved-aside
+
+# Editor and tooling noise
+*.swp
+*.lock
+*~
+.idea/

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+
+<dictionary title="IDASEN Desk">
+    <suite name="IDASEN Desk Suite" code="MApN" description="IDASEN Desk Scripts">
+        <command name="move" code="lkpstrng" description="Move the connected desk">
+            <cocoa class="IDASENDesk.MoveDeskCommand"/>
+            <direct-parameter description="In what way to move">
+                <type type="text"/>
+            </direct-parameter>
+        </command>
+        <command name="move to" code="lkpstrng" description="Move the connected desk to a specific height">
+            <cocoa class="IDASENDesk.MoveDeskToHeightCommand"/>
+            <direct-parameter description="Move to what height, for example 120cm or 60in">
+                <type type="text"/>
+            </direct-parameter>
+        </command>
+    </suite>
+</dictionary>
