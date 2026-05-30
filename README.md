@@ -6,6 +6,10 @@ The idea is simple: I wanted the desk to move to my sitting or standing height w
 
 This is not an official IKEA app. It is just a native macOS tool for people who spend most of the day at the same desk as their Mac.
 
+![IDASEN Desk height preferences](docs/images/preferences-heights.png)
+
+![IDASEN Desk menu bar controls](docs/images/menu-popover.png)
+
 ## Why This Exists
 
 The IDASEN desk is good hardware, but the stock controller is very literal: hold up to go up, hold down to go down. That works, but it also means changing posture is still a small interruption.
