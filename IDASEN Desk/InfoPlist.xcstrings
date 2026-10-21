@@ -1,0 +1,34 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSBluetoothAlwaysUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IDASEN Desk uses Bluetooth to connect to your desk and move it."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IDASEN Desk はデスクに接続して動かすために Bluetooth を使用します。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IDASEN Desk 使用蓝牙连接并控制你的桌子。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IDASEN Desk 使用藍牙連線並控制你的桌子。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -1,185 +1,128 @@
 # IDASEN Desk
 
-A small macOS menu bar app for IKEA IDASEN sit/stand desks.
+A native macOS menu bar app for IKEA IDASEN sit/stand desks.
 
-The idea is simple: I wanted the desk to move to my sitting or standing height without holding the physical switch the whole way. IDASEN Desk keeps those presets on the Mac, talks to the desk over Bluetooth, and gives the controls a permanent home in the menu bar.
+Click Sit or Stand and the desk drives itself there, with the controller's own smooth start and stop. Get a gentle nudge when you've been sitting too long. See how much you actually stood this week.
 
-This is not an official IKEA app. It is just a native macOS tool for people who spend most of the day at the same desk as their Mac.
+Not affiliated with IKEA or Linak.
 
-![IDASEN Desk height preferences](docs/images/preferences-heights.png)
+<p>
+  <img src="docs/images/menu-light.png" width="300" alt="Menu bar controls">
+  <img src="docs/images/menu-dark.png" width="300" alt="Menu bar controls while moving, dark mode">
+</p>
 
-![IDASEN Desk menu bar controls](docs/images/menu-popover.png)
+## Features
 
-## Why This Exists
+- **One-click presets.** Sit, Stand, and up to four named presets of your own. Moves use the desk controller's reference input, so the desk eases in and stops on the millimetre instead of being stopped by the app.
+- **Hold to move.** Raise and Lower behave like the handle on the desk.
+- **Stays connected.** Reconnects on its own after sleep, Bluetooth restarts, or when you carry your Mac between a home desk and an office desk.
+- **Posture reminders.** Based on how long you've actually been sitting (measured from the desk height), not the clock. Time away from the Mac counts as a break. Reminders arrive as notifications with a Stand Up button, and never move the desk by themselves.
+- **Activity history.** Standing and sitting time per day, stand-ups, and trends, counted only while you're at your Mac.
+- **Global keyboard shortcuts** for Sit, Stand and Toggle.
+- **Shortcuts and Siri:** Stand Up, Sit Down, Toggle Sit/Stand, Move Desk to Height, Get Desk Height.
+- **Desk handle double tap** (optional): two quick taps up go to standing height, two down go to sitting height.
+- **Calibration:** enter what a tape measure says, and every number in the app matches reality.
+- **AppleScript** for older automations.
+- English, 简体中文, 繁體中文, 日本語.
 
-The IDASEN desk is good hardware, but the stock controller is very literal: hold up to go up, hold down to go down. That works, but it also means changing posture is still a small interruption.
-
-This app removes a bit of that friction. Click Sit, click Stand, or use the physical handle double tap while the app is connected. The desk still moves like an IDASEN desk; the app just makes the common actions less tedious.
-
-## What Works
-
-- Menu bar control for live height, Sit, Stand, Up, Down, reconnect, and settings.
-- Saved sitting and standing presets.
-- A SwiftUI settings window with height tuning, unit selection, device management, reminders, gestures, language, and health stats.
-- Multiple saved desks, with one active desk receiving commands at a time.
-- Physical-handle double tap for sit/stand presets while the app is connected.
-- Standing reminders that ask first instead of silently moving the desk.
-- Local health stats based on desk connection time and reported height.
-- English, Japanese, and Traditional Chinese.
-- AppleScript commands for small automations.
+<p>
+  <img src="docs/images/settings-heights.png" width="420" alt="Height presets and calibration">
+  <img src="docs/images/settings-activity.png" width="420" alt="Activity history">
+</p>
 
 ## The Important Limitation
 
-The original IDASEN control panel does not store memory positions. This app cannot teach the stock panel your saved heights.
-
-Saved heights, double tap, reminders, AppleScript, and health stats all depend on the Mac app being open and connected to the desk. When the app is not running, the desk goes back to being a normal IDASEN desk.
-
-If you want preset heights without relying on a computer, you probably want a separate always-on Bluetooth controller, for example a Home Assistant bridge, an ESP32 project, or another small helper device. That is a different kind of project.
+The IDASEN control panel has no memory buttons, and the app can't add any. Presets, reminders, shortcuts and the double tap all need the app to be running and connected. When it isn't, the desk is a normal IDASEN desk.
 
 ## Requirements
 
-- macOS 13 or newer.
-- Xcode 15 or newer if you want to build it yourself.
-- Bluetooth permission.
-- An IKEA IDASEN sit/stand desk with Bluetooth.
+- macOS 14 Sonoma or newer, Apple silicon or Intel.
+- An IKEA IDASEN desk (Linak DPG controller with Bluetooth).
+
+## Getting Started
+
+1. Launch the app. It lives in the menu bar.
+2. Hold the Bluetooth button on the desk's control panel until the light blinks blue.
+3. Choose your desk in the menu and click Connect. macOS may ask to pair the first time.
+
+From then on it connects by itself.
+
+<img src="docs/images/menu-setup.png" width="300" alt="First-run setup">
 
 ## Build From Source
 
-Open the project:
+Requires Xcode 16 or newer.
 
 ```sh
 open "IDASEN Desk.xcodeproj"
 ```
 
-Select the `IDASEN Desk` scheme and run it.
-
-Release build from Terminal:
+From Terminal:
 
 ```sh
-xcodebuild \
-  -project "IDASEN Desk.xcodeproj" \
-  -scheme "IDASEN Desk" \
-  -configuration Release \
-  -derivedDataPath .derivedData \
-  build
+xcodebuild -project "IDASEN Desk.xcodeproj" -scheme "IDASEN Desk" -configuration Release -derivedDataPath .derivedData build
 ```
 
-The app will be built at:
+The app is built to `.derivedData/Build/Products/Release/IDASEN Desk.app`.
 
-```text
-.derivedData/Build/Products/Release/IDASEN Desk.app
-```
-
-I usually run the analyzer before sharing changes:
+Run the tests:
 
 ```sh
-xcodebuild \
-  -project "IDASEN Desk.xcodeproj" \
-  -scheme "IDASEN Desk" \
-  -configuration Debug \
-  -derivedDataPath .derivedData \
-  analyze
+xcodebuild -project "IDASEN Desk.xcodeproj" -scheme "IDASEN Desk" -derivedDataPath .derivedData test
 ```
 
-## Using The App
+Debug builds can render every screen with sample data, without a desk. Useful for screenshots and UI review:
 
-On first launch, give the app Bluetooth permission and connect to your desk. After that, the menu bar popover is the daily control surface.
+```sh
+".derivedData/Build/Products/Debug/IDASEN Desk.app/Contents/MacOS/IDASEN Desk" --render-previews ~/Desktop/previews
+```
 
-The settings window is where the slower decisions live:
+## How It Works
 
-- set sitting and standing heights
-- choose centimeters or inches
-- manage saved desks
-- tune standing reminders
-- enable or disable handle double tap
-- choose app language
-- view local posture stats
-- launch the app at login
+The desk speaks Linak's DPG protocol over Bluetooth LE:
 
-If more than one saved desk is connected, the active desk is the one that receives menu bar commands, AppleScript commands, double-tap actions, and reminders.
+| Characteristic | Use |
+| --- | --- |
+| `99FA0021` | Height and speed notifications (tenths of a millimetre above the lowest position) |
+| `99FA0002` | Commands: up, down, stop, wake up |
+| `99FA0031` | Reference input: write a target height, re-sent every 300 ms while moving |
 
-## Double Tap
+To move to a height the app wakes the controller, then keeps writing the target to the reference input until the desk reports it has stopped. The controller handles acceleration, deceleration and positioning. If the desk moves away from the target (someone grabbed the handle) or stops short (an obstacle), the app stops sending and reports it.
 
-Double tap is app-assisted. The desk reports a short physical movement, the app recognizes two taps in the same direction, and then the app sends the preset command.
+## Shortcuts, Siri and AppleScript
 
-So the feature is useful, but it is not magic firmware memory. It works only while IDASEN Desk is connected.
+The actions show up in the Shortcuts app under IDASEN Desk. Siri phrases include "Stand up with IDASEN Desk" and "Sit down with IDASEN Desk".
 
-## Standing Reminders
-
-The standing rhythm is intentionally prompt-first. When it is time to stand, the app shows a small window and lets you stand now, snooze, or skip.
-
-The app also checks recent keyboard and mouse activity, so it does not immediately nag you after you have been away from the Mac.
-
-## Health Stats
-
-Health stats are local estimates. The app looks at connection time and reported desk height to estimate sitting time, standing time, stand-up transitions, and daily rhythm.
-
-Treat these numbers as a useful mirror, not medical advice.
-
-## AppleScript
-
-Move to the standing preset:
+AppleScript:
 
 ```applescript
 tell application "IDASEN Desk"
-    move "stand"
+    move "stand"    -- also: sit, toggle, up, down, stop
+    move to "110cm" -- or "43in"; a bare number uses the unit chosen in Settings
 end tell
 ```
-
-Move to a specific height:
-
-```applescript
-tell application "IDASEN Desk"
-    move to "110cm"
-end tell
-```
-
-Supported movement commands:
-
-- `stand`
-- `sit`
-- `up`
-- `down`
-- `to-stand`
-- `to-sit`
-
-Heights can use `cm` or `in`. A bare number uses the unit selected in Settings.
 
 ## Project Layout
 
 ```text
 IDASEN Desk/
-  AppDelegate.swift
-  BluetoothManager.swift
-  DeskControlView.swift
-  AutoStand.swift
-  HealthStats.swift
-  HeightValueReadout.swift
-  Core/
-    DeskPeripheral.swift
-    DeskMotionController.swift
-  Preferences/
-    Preferences.swift
-    PreferencesView.swift
-  AppleScript Commands/
-    IDASENDesk.sdef
-    MoveDeskCommand.swift
-    MoveDeskToHeightCommand.swift
+  App/          App entry point and dependency wiring
+  Desk/         Bluetooth protocol, connection, motion, reconnection
+  Activity/     Presence, posture tracking, reminders, history
+  Controls/     Keyboard shortcuts, App Intents, AppleScript
+  MenuBar/      Menu bar icon and popover
+  Settings/     Preferences model and Settings window
+  Debug/        Screenshot renderer (Debug builds only)
+IDASEN DeskTests/
 ```
 
 ## Privacy
 
-The app stores preferences and health stats locally with `UserDefaults`.
-
-It does not upload analytics, desk data, Bluetooth identifiers, or health data.
-
-See [PRIVACY.md](PRIVACY.md).
+Everything stays on your Mac in `UserDefaults`. No accounts, analytics or network access. See [PRIVACY.md](PRIVACY.md).
 
 ## Contributing
 
-Small, careful changes are welcome. This app controls real hardware, so movement behavior should be treated conservatively.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+This app moves real furniture, so movement changes should be conservative. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

@@ -1,0 +1,116 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Lower my desk with ${applicationName}": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "${applicationName}でデスクを下げる"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}降低桌子"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}降低桌子"
+          }
+        }
+      }
+    },
+    "Raise my desk with ${applicationName}": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "${applicationName}でデスクを上げる"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}升高桌子"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}升高桌子"
+          }
+        }
+      }
+    },
+    "Sit down with ${applicationName}": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "${applicationName}で座る"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}坐下"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}坐下"
+          }
+        }
+      }
+    },
+    "Stand up with ${applicationName}": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "${applicationName}で立つ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}站起来"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}站起來"
+          }
+        }
+      }
+    },
+    "Toggle my desk with ${applicationName}": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "${applicationName}で座る/立つを切り替え"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}切换坐站"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用${applicationName}切換坐站"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

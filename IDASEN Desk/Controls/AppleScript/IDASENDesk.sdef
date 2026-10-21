@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+
+<dictionary title="IDASEN Desk">
+    <suite name="IDASEN Desk Suite" code="IDSK" description="Control the connected desk">
+        <command name="move" code="IDSKmove" description="Move the desk: stand, sit, toggle, up, down or stop">
+            <cocoa class="IDASENDesk.MoveDeskCommand"/>
+            <direct-parameter description="stand, sit, toggle, up, down or stop">
+                <type type="text"/>
+            </direct-parameter>
+        </command>
+        <command name="move to" code="IDSKmvto" description="Move the desk to a height, for example &quot;110cm&quot; or &quot;43in&quot;">
+            <cocoa class="IDASENDesk.MoveDeskToHeightCommand"/>
+            <direct-parameter description="The height, with cm or in; a bare number uses the unit chosen in Settings">
+                <type type="text"/>
+            </direct-parameter>
+        </command>
+    </suite>
+</dictionary>
