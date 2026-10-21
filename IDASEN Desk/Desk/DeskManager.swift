@@ -43,6 +43,14 @@ final class DeskManager {
     private(set) var isScanning = false
     /// Set when a move ended away from its target, cleared on the next move.
     private(set) var lastMoveStalled = false
+    /// Where the current move started, for progress.
+    private(set) var moveStartHeight: Double?
+    /// Smoothed vertical speed in cm/s, for time estimates.
+    private(set) var velocity: Double = 0
+    /// Increments each time a move reaches its target, so views can react.
+    private(set) var arrivals = 0
+    /// The last requested target, so a stalled move can be retried.
+    private(set) var lastTarget: MoveTarget?
 
     @ObservationIgnored let preferences: Preferences
     @ObservationIgnored private var central: CBCentralManager?
@@ -57,6 +65,7 @@ final class DeskManager {
     @ObservationIgnored private let retry = DelayedTask()
     @ObservationIgnored private let gestureMove = DelayedTask()
     @ObservationIgnored private var observers = [NSObjectProtocol]()
+    @ObservationIgnored private var lastSample: (raw: Int, time: Date)?
 
     private static let logger = Logger(subsystem: "com.takeshi264.idasen-desk-mac", category: "bluetooth")
 
@@ -98,6 +107,55 @@ final class DeskManager {
 
     var isMoving: Bool {
         target != nil || isJogging || direction != .none
+    }
+
+    var targetHeight: Double? {
+        switch target {
+        case .preset(let preset):
+            return preferences.height(for: preset)
+        case .height(let height):
+            return height
+        case nil:
+            return nil
+        }
+    }
+
+    /// 0...1 progress of the current move.
+    var moveProgress: Double? {
+        guard let start = moveStartHeight, let end = targetHeight, let height, abs(end - start) > 0.1 else {
+            return nil
+        }
+
+        return ((height - start) / (end - start)).clamped(to: 0...1)
+    }
+
+    /// Seconds left in the current move.
+    var secondsRemaining: Double? {
+        guard let end = targetHeight, let height else {
+            return nil
+        }
+
+        // IDASEN columns travel at roughly 3.8 cm/s.
+        let speed = abs(velocity) > 1 ? abs(velocity) : 3.8
+        return abs(end - height) / speed
+    }
+
+    /// Sitting or standing, judged from the current height.
+    var posture: Posture? {
+        height.map {
+            Posture.classify(height: $0, sittingHeight: preferences.sittingHeight, standingHeight: preferences.standingHeight)
+        }
+    }
+
+    func retryLastMove() {
+        switch lastTarget {
+        case .preset(let preset):
+            move(to: preset)
+        case .height(let height):
+            move(toHeight: height)
+        case nil:
+            break
+        }
     }
 
     var deskName: String? {
@@ -162,10 +220,15 @@ final class DeskManager {
     }
 
     func startJog(_ direction: MovingDirection) {
-        target = nil
         lastMoveStalled = false
-        isJogging = connection?.isReady == true
         connection?.startJog(direction)
+        target = nil
+        moveStartHeight = nil
+        if case .jog = connection?.motion {
+            isJogging = true
+        } else {
+            isJogging = false
+        }
     }
 
     func stopJog() {
@@ -190,8 +253,16 @@ final class DeskManager {
 
         lastMoveStalled = false
         isJogging = false
-        self.target = target
+        let start = self.height
+
+        // Set state after the call: re-targeting mid-move ends the old motion first,
+        // and that change notification would otherwise clear the new target.
         connection.move(toRaw: geometry.raw(height: height))
+        if connection.motion != .idle {
+            self.target = target
+            lastTarget = target
+            moveStartHeight = start
+        }
         syncFromConnection()
     }
 
@@ -438,8 +509,15 @@ final class DeskManager {
             self.syncFromConnection()
         }
         connection.onMoveFinished = { [weak self] outcome in
-            self?.lastMoveStalled = outcome == .stalled || outcome == .timedOut
-            self?.target = nil
+            guard let self else {
+                return
+            }
+            self.lastMoveStalled = outcome == .stalled || outcome == .timedOut
+            if outcome == .arrived {
+                self.arrivals += 1
+            }
+            self.target = nil
+            self.moveStartHeight = nil
         }
         connection.onHandleDoubleTap = { [weak self] direction in
             self?.handleDoubleTap(direction)
@@ -494,12 +572,31 @@ final class DeskManager {
             return
         }
 
+        let now = Date()
+        if let raw = connection.report?.raw {
+            if let last = lastSample, raw != last.raw {
+                let elapsed = now.timeIntervalSince(last.time)
+                if elapsed > 0.02, elapsed < 1 {
+                    let sample = Double(raw - last.raw) / 100 / elapsed
+                    velocity = velocity * 0.6 + sample * 0.4
+                }
+            }
+            if lastSample?.raw != raw {
+                lastSample = (raw, now)
+            }
+        }
+
         heightRaw = connection.report?.raw
         direction = connection.direction
+
+        if direction == .none {
+            velocity = 0
+        }
 
         if connection.motion == .idle {
             target = nil
             isJogging = false
+            moveStartHeight = nil
         }
 
         updateStatus()
@@ -550,7 +647,11 @@ final class DeskManager {
 
     #if DEBUG
     /// Drives the UI without hardware, for rendering screenshots.
-    func setPreviewState(status: Status, heightRaw: Int?, target: MoveTarget? = nil, direction: MovingDirection = .none, discovered: [DiscoveredDesk] = [], isScanning: Bool = false) {
+    func setPreviewState(status: Status, heightRaw: Int?, target: MoveTarget? = nil, direction: MovingDirection = .none, moveStart: Double? = nil, stalled: Bool = false, discovered: [DiscoveredDesk] = [], isScanning: Bool = false) {
+        self.moveStartHeight = moveStart
+        self.lastMoveStalled = stalled
+        self.lastTarget = stalled ? .preset(.stand) : target
+        self.velocity = direction == .none ? 0 : 3.8
         self.status = status
         self.heightRaw = heightRaw
         self.target = target

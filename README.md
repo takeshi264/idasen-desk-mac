@@ -7,16 +7,20 @@ Click Sit or Stand and the desk drives itself there, with the controller's own s
 Not affiliated with IKEA or Linak.
 
 <p>
-  <img src="docs/images/menu-light.png" width="300" alt="Menu bar controls">
-  <img src="docs/images/menu-dark.png" width="300" alt="Menu bar controls while moving, dark mode">
+  <img src="docs/images/menu-light.png" width="320" alt="Menu bar controls">
+  <img src="docs/images/menu-dark.png" width="320" alt="Moving to the standing preset, dark mode">
 </p>
 
 ## Features
 
+- **The desk's height as a control.** The popover shows the desk's full travel as a rail with your presets as stops. Drag the knob to any height (it snaps to presets with a trackpad tick) and the desk goes there when you let go, or click a preset's name.
+- **One main button that knows what you want.** Sitting, it says Stand Up; standing, Sit Down; moving, Stop, with progress and the seconds remaining.
+- **Adjust, then save.** Fine-tune with the handle or the arrows, and a Save option appears for the new height.
+- **Keyboard.** With the menu open, hold ↑/↓ to move, press Space to switch, 1–6 for presets, Esc to stop.
 - **One-click presets.** Sit, Stand, and up to four named presets of your own. Moves use the desk controller's reference input, so the desk eases in and stops on the millimetre instead of being stopped by the app.
 - **Hold to move.** Raise and Lower behave like the handle on the desk.
 - **Stays connected.** Reconnects on its own after sleep, Bluetooth restarts, or when you carry your Mac between a home desk and an office desk.
-- **Posture reminders.** Based on how long you've actually been sitting (measured from the desk height), not the clock. Time away from the Mac counts as a break. Reminders arrive as notifications with a Stand Up button, and never move the desk by themselves.
+- **Posture reminders** you can see coming: the menu shows how long until the next one. They're based on how long you've actually been sitting (measured from the desk height), not the clock. Time away from the Mac counts as a break. Reminders arrive as notifications with a Stand Up button, and never move the desk by themselves.
 - **Activity history.** Standing and sitting time per day, stand-ups, and trends, counted only while you're at your Mac.
 - **Global keyboard shortcuts** for Sit, Stand and Toggle.
 - **Shortcuts and Siri:** Stand Up, Sit Down, Toggle Sit/Stand, Move Desk to Height, Get Desk Height.
@@ -47,7 +51,7 @@ The IDASEN control panel has no memory buttons, and the app can't add any. Prese
 
 From then on it connects by itself.
 
-<img src="docs/images/menu-setup.png" width="300" alt="First-run setup">
+<img src="docs/images/menu-setup.png" width="320" alt="First-run setup">
 
 ## Build From Source
 

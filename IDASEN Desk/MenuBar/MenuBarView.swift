@@ -3,21 +3,26 @@ import SwiftUI
 
 struct MenuBarView: View {
     @Environment(DeskManager.self) private var desk
-    @Environment(Preferences.self) private var preferences
     @Environment(ActivityStore.self) private var activity
     @Environment(\.openSettings) private var openSettings
     @AppStorage(SettingsTab.storageKey) private var settingsTab = SettingsTab.general
 
     var body: some View {
         VStack(spacing: 0) {
+            Header(open: open)
+                .padding(.horizontal, 14)
+                .padding(.top, 12)
+                .padding(.bottom, 4)
+
             Group {
                 if desk.status == .connected {
-                    DeskControls()
+                    DeskPanel()
                 } else {
                     ConnectionStatusView(openDeskSettings: { open(.desks) })
                 }
             }
-            .padding(14)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
 
             if desk.status == .connected || activity.day(containing: Date()).trackedSeconds > 0 {
                 Divider()
@@ -25,21 +30,18 @@ struct MenuBarView: View {
                     .padding(.horizontal, 6)
                     .padding(.vertical, 5)
             }
-
-            Divider()
-
-            VStack(spacing: 0) {
-                MenuRow(title: "Settings…", shortcut: ",") {
-                    open(nil)
-                }
-                MenuRow(title: "Quit IDASEN Desk", shortcut: "q") {
-                    NSApp.terminate(nil)
-                }
-            }
-            .padding(.horizontal, 6)
-            .padding(.vertical, 5)
         }
-        .frame(width: 300)
+        .frame(width: 340)
+        .background {
+            // Keep ⌘, and ⌘Q working from the popover.
+            Group {
+                Button { open(nil) } label: { EmptyView() }.keyboardShortcut(",", modifiers: .command)
+                Button { NSApp.terminate(nil) } label: { EmptyView() }.keyboardShortcut("q", modifiers: .command)
+            }
+            .opacity(0)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+        }
     }
 
     private func open(_ tab: SettingsTab?) {
@@ -58,45 +60,135 @@ struct MenuBarView: View {
     }
 }
 
-// MARK: - Connected
+// MARK: - Header
 
-private struct DeskControls: View {
+private struct Header: View {
     @Environment(DeskManager.self) private var desk
-    @Environment(Preferences.self) private var preferences
+    let open: (SettingsTab?) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .center, spacing: 12) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(verbatim: desk.deskName ?? "IDASEN Desk")
-                        .font(.subheadline)
+        HStack(spacing: 6) {
+            Circle()
+                .fill(desk.status == .connected ? Color.green : Color.secondary.opacity(0.5))
+                .frame(width: 7, height: 7)
+                .accessibilityHidden(true)
+
+            Text(verbatim: desk.deskName ?? "IDASEN Desk")
+                .font(.headline)
+                .lineLimit(1)
+
+            Spacer()
+
+            Menu {
+                Button("Settings…") { open(nil) }
+                Button("Desks…") { open(.desks) }
+                Divider()
+                Button("Quit IDASEN Desk") { NSApp.terminate(nil) }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.secondary)
+            }
+            .menuStyle(.borderlessButton)
+            .menuIndicator(.hidden)
+            .fixedSize()
+            .accessibilityLabel(Text("More"))
+        }
+    }
+}
+
+// MARK: - Connected
+
+/// A stop on the height rail: a preset the desk can drive to.
+struct RailStop: Identifiable, Equatable {
+    let id: PresetID
+    let name: String
+    let height: Double
+}
+
+extension Preferences {
+    var railStops: [RailStop] {
+        [
+            RailStop(id: .sit, name: String(localized: "Sit"), height: sittingHeight),
+            RailStop(id: .stand, name: String(localized: "Stand"), height: standingHeight)
+        ] + customPresets.map { RailStop(id: .custom($0.id), name: $0.name, height: $0.height) }
+    }
+}
+
+private struct DeskPanel: View {
+    @Environment(DeskManager.self) private var desk
+    @Environment(Preferences.self) private var preferences
+    @FocusState private var isFocused: Bool
+    @State private var dragTarget: Double?
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            HeightRail(dragTarget: $dragTarget)
+                .frame(width: 132, height: 222)
+
+            VStack(alignment: .leading, spacing: 0) {
+                HeightReadout(height: dragTarget ?? desk.height, isPreview: dragTarget != nil, unit: unit)
+                DeskStatusLine(isDragging: dragTarget != nil)
+                    .padding(.top, 2)
+
+                ReminderProgress()
+                    .padding(.top, 12)
+
+                Spacer(minLength: 10)
+
+                SaveHeightMenu()
+                    .padding(.bottom, 8)
+
+                PrimaryActionButton()
+
+                HStack(spacing: 6) {
+                    HoldToMoveButton(direction: .up)
+                    HoldToMoveButton(direction: .down)
+                    Text("Hold to adjust")
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
-
-                    HeightReadout(height: desk.height, unit: unit)
-
-                    DeskStatusLine()
+                        .padding(.leading, 2)
                 }
-
-                Spacer(minLength: 0)
-
-                HeightGauge()
-                    .frame(width: 28, height: 76)
+                .padding(.top, 8)
             }
-
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
-                PresetButton(preset: .sit, name: Text("Sit"), symbol: "chair")
-                PresetButton(preset: .stand, name: Text("Stand"), symbol: "figure.stand")
-
-                ForEach(preferences.customPresets) { preset in
-                    PresetButton(preset: .custom(preset.id), name: Text(verbatim: preset.name), symbol: "bookmark")
-                }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+        .frame(height: 222)
+        .focusable()
+        .focusEffectDisabled()
+        .focused($isFocused)
+        .onAppear { isFocused = true }
+        .onDisappear { desk.stopJog() }
+        .onKeyPress(keys: [.upArrow, .downArrow], phases: [.down, .up]) { press in
+            if press.phase == .down {
+                desk.startJog(press.key == .upArrow ? .up : .down)
+            } else {
+                desk.stopJog()
             }
-
-            HStack(spacing: 8) {
-                HoldToMoveButton(direction: .down, title: Text("Lower"))
-                HoldToMoveButton(direction: .up, title: Text("Raise"))
+            return .handled
+        }
+        .onKeyPress(.space) {
+            desk.toggleSitStand()
+            return .handled
+        }
+        .onKeyPress(.escape) {
+            guard desk.isMoving else {
+                return .ignored
             }
+            desk.stop()
+            return .handled
+        }
+        .onKeyPress(characters: .decimalDigits, phases: .down) { press in
+            let stops = preferences.railStops
+            guard let number = Int(press.characters), (1...stops.count).contains(number) else {
+                return .ignored
+            }
+            desk.moveOrStop(stops[number - 1].id)
+            return .handled
+        }
+        .onChange(of: desk.arrivals) {
+            Haptics.perform(.levelChange)
         }
     }
 
@@ -107,6 +199,7 @@ private struct DeskControls: View {
 
 private struct HeightReadout: View {
     let height: Double?
+    let isPreview: Bool
     let unit: HeightUnit
 
     var body: some View {
@@ -116,12 +209,14 @@ private struct HeightReadout: View {
                 .monospacedDigit()
                 .contentTransition(.numericText())
                 .animation(.snappy(duration: 0.2), value: height)
+                .foregroundStyle(isPreview ? AnyShapeStyle(.tint) : AnyShapeStyle(.primary))
 
             Text(verbatim: unit.symbol)
                 .font(.title3.weight(.medium))
                 .foregroundStyle(.secondary)
         }
         .lineLimit(1)
+        .minimumScaleFactor(0.8)
         .accessibilityElement(children: .combine)
     }
 }
@@ -130,21 +225,32 @@ private struct DeskStatusLine: View {
     @Environment(DeskManager.self) private var desk
     @Environment(ActivityTracker.self) private var tracker
     @Environment(Preferences.self) private var preferences
+    let isDragging: Bool
 
     var body: some View {
         Group {
-            if let target = desk.target {
-                Label { movingText(to: target) } icon: { Image(systemName: desk.direction == .down ? "arrow.down" : "arrow.up") }
+            if isDragging {
+                Text("Release to move")
+            } else if let target = desk.target {
+                Text(movingText(to: target))
             } else if desk.isJogging || desk.direction != .none {
-                Label(desk.direction == .down ? "Lowering…" : "Raising…", systemImage: desk.direction == .down ? "arrow.down" : "arrow.up")
+                Text(desk.direction == .down ? "Lowering…" : "Raising…")
             } else if desk.lastMoveStalled {
-                Label("Stopped before reaching the target", systemImage: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
-            } else if let posture = tracker.posture, tracker.streak >= 60 {
-                let duration = Formatters.duration(tracker.streak)
-                Text(posture == .sitting ? "Sitting for \(duration)" : "Standing for \(duration)")
-            } else {
-                Text("Ready")
+                HStack(spacing: 6) {
+                    Label("Stopped early", systemImage: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                    Button("Try Again") {
+                        desk.retryLastMove()
+                    }
+                    .buttonStyle(.link)
+                }
+            } else if let posture = desk.posture {
+                if tracker.posture == posture, tracker.streak >= 60 {
+                    let duration = Formatters.duration(tracker.streak)
+                    Text(posture == .sitting ? "Sitting · \(duration)" : "Standing · \(duration)")
+                } else {
+                    Text(posture == .sitting ? "Sitting" : "Standing")
+                }
             }
         }
         .font(.callout)
@@ -152,127 +258,184 @@ private struct DeskStatusLine: View {
         .lineLimit(1)
     }
 
-    private func movingText(to target: DeskManager.MoveTarget) -> Text {
+    private func movingText(to target: DeskManager.MoveTarget) -> LocalizedStringKey {
+        let rising = (desk.targetHeight ?? 0) > (desk.height ?? 0)
+
         switch target {
-        case .preset(.sit):
-            return Text("Moving to Sit…")
-        case .preset(.stand):
-            return Text("Moving to Stand…")
-        case .preset(.custom(let id)):
-            let name = preferences.customPresets.first { $0.id == id }?.name ?? ""
-            return Text("Moving to \(name)…")
+        case .preset(let preset):
+            let name = preferences.railStops.first { $0.id == preset }?.name ?? ""
+            return rising ? "Rising to \(name)" : "Lowering to \(name)"
         case .height(let height):
-            return Text("Moving to \(HeightUnit(isMetric: preferences.isMetric).label(height))…")
+            let label = HeightUnit(isMetric: preferences.isMetric).label(height)
+            return rising ? "Rising to \(label)" : "Lowering to \(label)"
         }
     }
 }
 
-/// The desk's travel as a vertical track with preset ticks.
-private struct HeightGauge: View {
+/// How close the next posture reminder is, so it never comes as a surprise.
+private struct ReminderProgress: View {
+    @Environment(DeskManager.self) private var desk
+    @Environment(ActivityTracker.self) private var tracker
+    @Environment(Preferences.self) private var preferences
+
+    var body: some View {
+        if !desk.isMoving, let posture = tracker.posture, let minutes = reminderMinutes(for: posture) {
+            let total = TimeInterval(minutes * 60)
+            let remaining = max(0, total - tracker.streak)
+
+            VStack(alignment: .leading, spacing: 5) {
+                ProgressView(value: min(tracker.streak / total, 1))
+                    .progressViewStyle(.linear)
+                    .controlSize(.small)
+                    .tint(remaining == 0 ? .orange : .accentColor)
+
+                Group {
+                    if remaining == 0 {
+                        Text(posture == .sitting ? "Time to stand up" : "Time to sit down")
+                    } else {
+                        let duration = Formatters.duration(remaining)
+                        Text(posture == .sitting ? "Stand reminder in \(duration)" : "Sit reminder in \(duration)")
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            }
+        }
+    }
+
+    private func reminderMinutes(for posture: Posture) -> Int? {
+        switch posture {
+        case .sitting:
+            return preferences.sitReminderEnabled ? preferences.sitReminderMinutes : nil
+        case .standing:
+            return preferences.standReminderEnabled ? preferences.standReminderMinutes : nil
+        }
+    }
+}
+
+/// Offered after a manual adjustment lands between presets: keep that height.
+private struct SaveHeightMenu: View {
     @Environment(DeskManager.self) private var desk
     @Environment(Preferences.self) private var preferences
 
     var body: some View {
-        GeometryReader { proxy in
-            let height = proxy.size.height
-            let trackX = proxy.size.width - 5
+        if let height = desk.height, !desk.isMoving, desk.currentPreset == nil, !desk.lastMoveStalled {
+            let label = HeightUnit(isMetric: preferences.isMetric).label(height)
 
-            ZStack(alignment: .topLeading) {
-                Capsule()
-                    .fill(.quaternary)
-                    .frame(width: 6, height: height)
-                    .offset(x: trackX - 3)
-
-                if let fraction = fraction(of: desk.height) {
-                    Capsule()
-                        .fill(.tint)
-                        .frame(width: 6, height: max(6, height * fraction))
-                        .offset(x: trackX - 3, y: height * (1 - fraction))
-                        .animation(.snappy(duration: 0.2), value: fraction)
+            Menu {
+                Button("Save as Sit Height") {
+                    preferences.setHeight(height, for: .sit)
                 }
+                Button("Save as Stand Height") {
+                    preferences.setHeight(height, for: .stand)
+                }
+                Button("Save as New Preset") {
+                    let number = preferences.customPresets.count + 1
+                    preferences.customPresets.append(CustomPreset(name: String(localized: "Preset \(number)"), height: height))
+                }
+                .disabled(preferences.customPresets.count >= Preferences.maximumCustomPresets)
+            } label: {
+                Label("Save \(label)", systemImage: "bookmark")
+                    .font(.callout)
+            }
+            .menuStyle(.borderlessButton)
+            .fixedSize()
+        }
+    }
+}
 
-                ForEach(presetHeights, id: \.self) { preset in
-                    if let fraction = fraction(of: preset) {
-                        Capsule()
-                            .fill(.secondary)
-                            .frame(width: 7, height: 2)
-                            .offset(x: trackX - 13, y: height * (1 - fraction) - 1)
+/// The one thing you most likely want: stand if sitting, sit if standing, stop if moving.
+private struct PrimaryActionButton: View {
+    @Environment(DeskManager.self) private var desk
+    @Environment(Preferences.self) private var preferences
+
+    var body: some View {
+        Button(action: perform) {
+            HStack(spacing: 8) {
+                Image(systemName: symbol)
+                    .font(.system(size: 14, weight: .bold))
+                    .frame(width: 18)
+                Text(title)
+                    .font(.headline)
+                    .lineLimit(1)
+                    .fixedSize()
+                Spacer(minLength: 4)
+                Text(verbatim: detail)
+                    .font(.callout)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .fixedSize()
+                    .opacity(0.85)
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 12)
+            .frame(height: 40)
+            .background {
+                GeometryReader { proxy in
+                    ZStack(alignment: .leading) {
+                        Rectangle()
+                            .fill(Color.accentColor.opacity(isStop ? 0.55 : 1))
+                        if let progress = desk.moveProgress {
+                            Rectangle()
+                                .fill(Color.accentColor)
+                                .frame(width: proxy.size.width * progress)
+                                .animation(.linear(duration: 0.2), value: progress)
+                        }
                     }
                 }
             }
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
-        .accessibilityHidden(true)
+        .buttonStyle(PressableStyle())
+        .help(Text("Press Space to switch"))
     }
 
-    private var presetHeights: [Double] {
-        [preferences.sittingHeight, preferences.standingHeight] + preferences.customPresets.map(\.height)
+    private var isStop: Bool {
+        desk.isMoving
     }
 
-    private func fraction(of value: Double?) -> Double? {
-        guard let value else {
-            return nil
+    private var goesUp: Bool {
+        desk.posture != .standing
+    }
+
+    private var symbol: String {
+        isStop ? "stop.fill" : goesUp ? "arrow.up" : "arrow.down"
+    }
+
+    private var title: LocalizedStringKey {
+        isStop ? "Stop" : goesUp ? "Stand Up" : "Sit Down"
+    }
+
+    private var detail: String {
+        let unit = HeightUnit(isMetric: preferences.isMetric)
+
+        if isStop {
+            guard desk.target != nil, let seconds = desk.secondsRemaining else {
+                return ""
+            }
+            return Duration.seconds(max(1, Int(seconds.rounded()))).formatted(.units(allowed: [.seconds], width: .narrow))
         }
 
-        let range = desk.geometry.range
-        return ((value - range.lowerBound) / (range.upperBound - range.lowerBound)).clamped(to: 0...1)
+        return unit.label(goesUp ? preferences.standingHeight : preferences.sittingHeight)
+    }
+
+    private func perform() {
+        if isStop {
+            desk.stop()
+        } else {
+            desk.move(to: goesUp ? .stand : .sit)
+        }
     }
 }
 
-private struct PresetButton: View {
-    @Environment(DeskManager.self) private var desk
-    @Environment(Preferences.self) private var preferences
-    @State private var isHovered = false
-
-    let preset: PresetID
-    let name: Text
-    let symbol: String
-
-    var body: some View {
-        Button {
-            desk.moveOrStop(preset)
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: isMovingHere ? "stop.fill" : symbol)
-                    .font(.system(size: 12, weight: .semibold))
-                    .frame(width: 26, height: 26)
-                    .foregroundStyle(isHighlighted ? Color.white : Color.primary)
-                    .background(Circle().fill(isHighlighted ? AnyShapeStyle(.tint) : AnyShapeStyle(.quaternary)))
-
-                VStack(alignment: .leading, spacing: 0) {
-                    name
-                        .font(.callout.weight(.medium))
-                        .lineLimit(1)
-                    Text(verbatim: heightLabel)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                }
-
-                Spacer(minLength: 0)
-            }
-            .padding(7)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(.primary.opacity(isHovered ? 0.09 : 0.05))
-            )
-            .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-        }
-        .buttonStyle(.plain)
-        .onHover { isHovered = $0 }
-        .help(isMovingHere ? Text("Stop") : Text("Move to this height"))
-    }
-
-    private var isMovingHere: Bool {
-        desk.target == .preset(preset)
-    }
-
-    private var isHighlighted: Bool {
-        isMovingHere || desk.currentPreset == preset
-    }
-
-    private var heightLabel: String {
-        preferences.height(for: preset).map(HeightUnit(isMetric: preferences.isMetric).label) ?? ""
+private struct PressableStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.8 : 1)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.snappy(duration: 0.12), value: configuration.isPressed)
     }
 }
 
@@ -282,48 +445,43 @@ private struct HoldToMoveButton: View {
     @State private var isPressed = false
 
     let direction: MovingDirection
-    let title: Text
 
     var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: direction == .up ? "chevron.up" : "chevron.down")
-                .font(.system(size: 11, weight: .bold))
-            title
-                .font(.callout.weight(.medium))
-        }
-        .frame(maxWidth: .infinity, minHeight: 30)
-        .foregroundStyle(isPressed ? AnyShapeStyle(.tint) : AnyShapeStyle(.primary))
-        .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(isPressed ? AnyShapeStyle(.tint.opacity(0.2)) : AnyShapeStyle(.primary.opacity(0.05)))
-        )
-        .contentShape(Rectangle())
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in
-                    guard !isPressed else {
-                        return
+        Image(systemName: direction == .up ? "chevron.up" : "chevron.down")
+            .font(.system(size: 12, weight: .bold))
+            .frame(width: 34, height: 28)
+            .foregroundStyle(isPressed ? AnyShapeStyle(.tint) : AnyShapeStyle(.primary))
+            .background(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(isPressed ? AnyShapeStyle(.tint.opacity(0.2)) : AnyShapeStyle(.primary.opacity(0.07)))
+            )
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        guard !isPressed else {
+                            return
+                        }
+                        isPressed = true
+                        desk.startJog(direction)
                     }
-                    isPressed = true
-                    desk.startJog(direction)
-                }
-                .onEnded { _ in
+                    .onEnded { _ in
+                        isPressed = false
+                        desk.stopJog()
+                    }
+            )
+            .onDisappear {
+                if isPressed {
                     isPressed = false
                     desk.stopJog()
                 }
-        )
-        .onDisappear {
-            if isPressed {
-                isPressed = false
-                desk.stopJog()
             }
-        }
-        .help(Text("Hold to move"))
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityAction {
-            desk.nudge(direction)
-        }
+            .help(direction == .up ? Text("Raise (hold ↑)") : Text("Lower (hold ↓)"))
+            .accessibilityLabel(direction == .up ? Text("Raise") : Text("Lower"))
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction {
+                desk.nudge(direction)
+            }
     }
 }
 
@@ -345,26 +503,11 @@ private struct TodaySummaryRow: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
                 Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
             }
         }
-    }
-}
-
-struct MenuRow: View {
-    let title: LocalizedStringKey
-    let shortcut: Character
-    let action: () -> Void
-
-    var body: some View {
-        MenuRowButton(action: action) {
-            HStack {
-                Text(title)
-                Spacer()
-                Text(verbatim: "⌘\(shortcut.uppercased())")
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .keyboardShortcut(KeyEquivalent(shortcut), modifiers: .command)
     }
 }
 
@@ -390,5 +533,11 @@ struct MenuRowButton<Label: View>: View {
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
+    }
+}
+
+enum Haptics {
+    static func perform(_ pattern: NSHapticFeedbackManager.FeedbackPattern) {
+        NSHapticFeedbackManager.defaultPerformer.perform(pattern, performanceTime: .now)
     }
 }

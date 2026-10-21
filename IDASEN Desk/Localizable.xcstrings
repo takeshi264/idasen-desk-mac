@@ -815,6 +815,28 @@
         }
       }
     },
+    "Desk height": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デスクの高さ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "桌子高度"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "桌子高度"
+          }
+        }
+      }
+    },
     "Desks": {
       "localizations": {
         "ja": {
@@ -833,6 +855,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "桌子"
+          }
+        }
+      }
+    },
+    "Desks…": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デスク…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "桌子…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "桌子…"
           }
         }
       }
@@ -921,6 +965,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "取得桌子高度"
+          }
+        }
+      }
+    },
+    "Go to %@ (%lld)": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@へ移動（%2$lld）"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移到%1$@（%2$lld）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移到%1$@（%2$lld）"
           }
         }
       }
@@ -1057,24 +1123,24 @@
         }
       }
     },
-    "Hold to move": {
+    "Hold to adjust": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "押している間移動"
+            "value": "押して微調整"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "按住移动"
+            "value": "按住微调"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "按住移動"
+            "value": "按住微調"
           }
         }
       }
@@ -1255,6 +1321,50 @@
         }
       }
     },
+    "Lower (hold ↓)": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下げる（↓ を長押し）"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "降低（按住 ↓）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "降低（按住 ↓）"
+          }
+        }
+      }
+    },
+    "Lowering to %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@へ下降中"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在降到%@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在降到%@"
+          }
+        }
+      }
+    },
     "Lowering…": {
       "localizations": {
         "ja": {
@@ -1317,6 +1427,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "實測高度"
+          }
+        }
+      }
+    },
+    "More": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "その他"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多"
           }
         }
       }
@@ -1387,28 +1519,6 @@
         }
       }
     },
-    "Move to this height": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "この高さへ移動"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "移动到这个高度"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "移動到這個高度"
-          }
-        }
-      }
-    },
     "Moves the desk to a height in centimetres.": {
       "localizations": {
         "ja": {
@@ -1427,72 +1537,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "將桌子移到指定高度（公分）。"
-          }
-        }
-      }
-    },
-    "Moving to %@…": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ へ移動中…"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在移到 %@…"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在移到 %@…"
-          }
-        }
-      }
-    },
-    "Moving to Sit…": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "座り姿勢へ移動中…"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在降到坐姿…"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在降到坐姿…"
-          }
-        }
-      }
-    },
-    "Moving to Stand…": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "立ち姿勢へ移動中…"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在升到站姿…"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在升到站姿…"
           }
         }
       }
@@ -1849,6 +1893,28 @@
         }
       }
     },
+    "Press Space to switch": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スペースキーで切り替え"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按空格键切换"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按空白鍵切換"
+          }
+        }
+      }
+    },
     "Project on GitHub": {
       "localizations": {
         "ja": {
@@ -1911,6 +1977,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "升高"
+          }
+        }
+      }
+    },
+    "Raise (hold ↑)": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上げる（↑ を長押し）"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "升高（按住 ↑）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "升高（按住 ↑）"
           }
         }
       }
@@ -1981,28 +2069,6 @@
         }
       }
     },
-    "Ready": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "準備完了"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "就绪"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "就緒"
-          }
-        }
-      }
-    },
     "Record Shortcut": {
       "localizations": {
         "ja": {
@@ -2021,6 +2087,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "錄製快速鍵"
+          }
+        }
+      }
+    },
+    "Release to move": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "離すと移動"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "松开即移动"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "放開即移動"
           }
         }
       }
@@ -2245,6 +2333,116 @@
         }
       }
     },
+    "Rising to %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@へ上昇中"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在升到%@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在升到%@"
+          }
+        }
+      }
+    },
+    "Save %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ を保存"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存 %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "儲存 %@"
+          }
+        }
+      }
+    },
+    "Save as New Preset": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しいプリセットとして保存"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "存为新预设"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "存為新預設"
+          }
+        }
+      }
+    },
+    "Save as Sit Height": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "座り姿勢の高さとして保存"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "存为坐姿高度"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "存為坐姿高度"
+          }
+        }
+      }
+    },
+    "Save as Stand Height": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "立ち姿勢の高さとして保存"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "存为站姿高度"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "存為站姿高度"
+          }
+        }
+      }
+    },
     "Search Again": {
       "localizations": {
         "ja": {
@@ -2448,19 +2646,19 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "座る"
+            "value": "着席"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "坐"
+            "value": "坐姿"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "坐"
+            "value": "坐姿"
           }
         }
       }
@@ -2509,6 +2707,28 @@
         }
       }
     },
+    "Sit reminder in %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 後に座るリマインダー"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@后提醒你坐下"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@後提醒你坐下"
+          }
+        }
+      }
+    },
     "Sitting": {
       "localizations": {
         "ja": {
@@ -2531,24 +2751,24 @@
         }
       }
     },
-    "Sitting for %@": {
+    "Sitting · %@": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ 座っています"
+            "value": "座り · %@"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已坐 %@"
+            "value": "坐着 · %@"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "已坐 %@"
+            "value": "坐著 · %@"
           }
         }
       }
@@ -2580,19 +2800,19 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "立つ"
+            "value": "起立"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "站"
+            "value": "站姿"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "站"
+            "value": "站姿"
           }
         }
       }
@@ -2637,6 +2857,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "「捷徑」和 Siri 中可以使用：站起來、坐下、切換坐站、將桌子移到指定高度、取得桌子高度。"
+          }
+        }
+      }
+    },
+    "Stand reminder in %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 後に立つリマインダー"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@后提醒你站起来"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@後提醒你站起來"
           }
         }
       }
@@ -2707,24 +2949,24 @@
         }
       }
     },
-    "Standing for %@": {
+    "Standing · %@": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ 立っています"
+            "value": "立ち · %@"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已站 %@"
+            "value": "站着 · %@"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "已站 %@"
+            "value": "站著 · %@"
           }
         }
       }
@@ -2773,24 +3015,24 @@
         }
       }
     },
-    "Stopped before reaching the target": {
+    "Stopped early": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "目標の高さに達する前に停止しました"
+            "value": "途中で停止しました"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "未到达目标高度就停下了"
+            "value": "提前停下了"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "未到達目標高度就停下了"
+            "value": "提前停下了"
           }
         }
       }
@@ -3083,6 +3325,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "切換坐站"
+          }
+        }
+      }
+    },
+    "Try Again": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再試行"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重试"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重試"
           }
         }
       }

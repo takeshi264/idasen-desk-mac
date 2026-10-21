@@ -7,6 +7,7 @@ A rewrite of the Bluetooth, motion and reminder code, and a new interface.
 ### Safer and more precise movement
 
 - Moves now use the controller's reference input (`99FA0031`). The desk eases in and out and stops within millimetres, instead of the app sending up/down pulses and cutting power about half a centimetre early.
+- Changing the target mid-move keeps the new target (the old motion's end used to clear it).
 - Hold-to-move keeps sending commands while pressed. Before, a single command was sent, so the desk stopped after about a second even if the button was still held.
 - Using the handle against an in-progress move cancels it. A move that stops short is reported instead of hidden by rounding the display.
 - The command loop opts out of App Nap while the desk is moving.
@@ -25,12 +26,19 @@ A rewrite of the Bluetooth, motion and reminder code, and a new interface.
 
 ### Interface
 
-- A new menu bar popover and a standard macOS Settings window.
+- The popover is built around the desk's height: a rail showing the full travel with presets as stops. Drag to any height (snapping to presets with haptic feedback) or click a preset.
+- A single context-aware main button: Stand Up when sitting, Sit Down when standing, Stop with progress and time remaining while moving.
+- After a manual adjustment, the new height can be saved as Sit, Stand or a new preset right from the menu.
+- The time until the next posture reminder is visible in the menu.
+- A stalled move says so and offers Try Again.
+- Keyboard control in the menu: hold ↑/↓, Space, 1–6, Esc.
+- A standard macOS Settings window.
 - The menu bar icon is drawn from the desk's real height, and can show the height as text.
 - Up to four extra named presets.
 - Calibration against a tape measure. Presets keep their physical positions when you calibrate.
 - Activity history with a chart, counting only time you're actually at the Mac.
 - Simplified Chinese added; English, Traditional Chinese and Japanese updated.
+- Deeper accent colour so white text on buttons stays readable in dark mode.
 - The in-app language picker is gone. Use System Settings → General → Language & Region → Applications to run the app in a different language.
 
 ### Automation

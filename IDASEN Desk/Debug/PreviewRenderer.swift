@@ -28,10 +28,22 @@ enum PreviewRenderer {
         let menuStates: [(String, () -> Void)] = [
             ("menu-connected", {
                 desk.setPreviewState(status: .connected, heightRaw: raw(72))
-                environment.tracker.setPreviewState(posture: .sitting, streak: 38 * 60)
+                environment.tracker.setPreviewState(posture: .sitting, streak: 32 * 60)
+            }),
+            ("menu-standing", {
+                desk.setPreviewState(status: .connected, heightRaw: raw(110))
+                environment.tracker.setPreviewState(posture: .standing, streak: 14 * 60)
             }),
             ("menu-moving", {
-                desk.setPreviewState(status: .connected, heightRaw: raw(93.4), target: .preset(.stand), direction: .up)
+                desk.setPreviewState(status: .connected, heightRaw: raw(93.4), target: .preset(.stand), direction: .up, moveStart: 72)
+                environment.tracker.setPreviewState(posture: .sitting, streak: 32 * 60)
+            }),
+            ("menu-adjusted", {
+                desk.setPreviewState(status: .connected, heightRaw: raw(98.5))
+                environment.tracker.setPreviewState(posture: .standing, streak: 3 * 60)
+            }),
+            ("menu-stalled", {
+                desk.setPreviewState(status: .connected, heightRaw: raw(88), stalled: true)
             }),
             ("menu-setup", {
                 desk.setPreviewState(status: .noDesk, heightRaw: nil, discovered: [
@@ -52,7 +64,7 @@ enum PreviewRenderer {
 
             for (name, configure) in menuStates {
                 configure()
-                render(MenuBarView().appEnvironment(environment), width: 300, appearance: appearance, to: directory.appendingPathComponent("\(name)-\(suffix).png"))
+                render(MenuBarView().appEnvironment(environment), width: 340, appearance: appearance, to: directory.appendingPathComponent("\(name)-\(suffix).png"))
             }
         }
 
