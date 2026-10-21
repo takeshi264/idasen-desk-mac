@@ -128,7 +128,6 @@ final class Preferences {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        DefaultsMigration.migrateIfNeeded(to: defaults)
 
         let hasLegacySettings = defaults.object(forKey: Key.standingHeight) != nil
 
@@ -239,33 +238,6 @@ final class Preferences {
 
     func deskName(for id: UUID?) -> String? {
         knownDesks.first { $0.id == id }?.name
-    }
-}
-
-/// Copies settings saved under the bundle identifiers used by earlier builds.
-enum DefaultsMigration {
-    private static let legacyBundleIdentifiers = [
-        "com.tom.idasen-desk",
-        "com.adeptusastartes.idasen-desk"
-    ]
-    private static var hasRun = false
-
-    static func migrateIfNeeded(to defaults: UserDefaults) {
-        guard !hasRun, defaults == .standard else {
-            return
-        }
-
-        hasRun = true
-
-        for identifier in legacyBundleIdentifiers where Bundle.main.bundleIdentifier != identifier {
-            guard let legacyDomain = UserDefaults.standard.persistentDomain(forName: identifier) else {
-                continue
-            }
-
-            for (key, value) in legacyDomain where defaults.object(forKey: key) == nil {
-                defaults.set(value, forKey: key)
-            }
-        }
     }
 }
 

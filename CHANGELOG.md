@@ -47,4 +47,4 @@ A rewrite of the Bluetooth, motion and reminder code, and a new interface.
 
 ### Upgrading from 1.x
 
-Sitting and standing heights, saved desks, units, the double-tap setting and activity history carry over. If 1.x showed a height offset, it becomes the new calibration so the numbers you're used to don't change.
+Sitting and standing heights, saved desks, units, the double-tap setting and activity history carry over when the previous build used the same bundle identifier (`com.takeshi264.idasen-desk-mac`). Builds under older identifiers kept their settings in their own sandbox container, which a sandboxed app can't read; the unused cross-app migration was removed. If 1.x showed a height offset, it becomes the new calibration so the numbers you're used to don't change.
